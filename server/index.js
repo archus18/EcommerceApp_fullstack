@@ -24,7 +24,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: process.env.fRONTEND_URL, // ✅ allows all localhost ports in dev
+    origin: process.env.FRONTEND_URL, // ✅ allows all localhost ports in dev
     credentials: true,
   })
 );
