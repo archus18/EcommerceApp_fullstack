@@ -1,60 +1,32 @@
-import React from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import ProductCart from "../components/ProductCart";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-
-const products = [
-  {
-    id: 1,
-    title: "iPhone 14",
-    price: 69999,
-    image: "https://cdn-icons-png.flaticon.com/512/179/179457.png",
-  },
-  {
-    id: 2,
-    title: "Headphones",
-    price: 1999,
-    image: "https://cdn-icons-png.flaticon.com/512/3659/3659899.png",
-  },
-  {
-    id: 3,
-    title: "Smart Watch",
-    price: 2999,
-    image: "https://cdn-icons-png.flaticon.com/512/847/847969.png",
-  },
-];
 
 const Home = () => {
   return (
-    <>
-      <Navbar />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-cyan-400 to-green-400 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white rounded-[40px] shadow-2xl w-full max-w-4xl p-12 md:p-14 text-center"
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+          Welcome to ShopEase
+        </h1>
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20 text-center">
-        <motion.h1 
-          initial={{ opacity: 0, y: -50 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          className="text-4xl font-bold"
+        <p className="text-gray-600 mb-8">
+          Your one-stop destination for smart shopping.
+        </p>
+
+        <Link
+          to="/products"
+          className="inline-block px-10 py-4 rounded-full text-white text-lg font-semibold
+          bg-gradient-to-r from-cyan-500 to-green-500 hover:opacity-90 transition"
         >
-          Welcome to ShopEase 🛒
-        </motion.h1>
-        <p className="mt-4">Best products at best prices</p>
-      </div>
-
-      {/* Products */}
-      <div className="max-w-7xl mx-auto p-6">
-        <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {products.map((item) => (
-            <ProductCart key={item.id} product={item} />
-          ))}
-        </div>
-      </div>
-
-      <Footer />
-    </>
+          Shop Here
+        </Link>
+      </motion.div>
+    </div>
   );
 };
 

@@ -1,20 +1,33 @@
 import { Router } from "express";
-import { createProduct, getAllProducts } from "../controller/productController.js";
+import {
+  createProduct,
+  getProducts,
+  getSingleProduct,
+  getProductCount,
+  getProductReviews,
+  addProductReview,
+} from "../controller/productController.js";
 
-const productRouter = Router();
+import { authentication } from "../middleware/authentication.js";
 
-productRouter.get('/', (req, res) => {
-    res.send("Product route is working");
-});
+const router = Router();
 
-productRouter.get('/products', getAllProducts);
+/* ================= PRODUCTS ================= */
 
-// productRouter.get('/product/:id',  );
+// ✅ ADMIN ONLY CREATE
+router.post("/create", authentication, (req, res, next) => {
+  if (req.role !== "admin") {
+    return res.status(403).json({ message: "Admin only" });
+  }
+  next();
+}, createProduct);
 
-productRouter.post('/product', createProduct);
+router.get("/", getProducts);
+router.get("/count", getProductCount);
+router.get("/:id", getSingleProduct);
 
-// productRouter.put('/product/:id');
+/* ================= ✅ REVIEWS ================= */
+router.get("/:id/reviews", getProductReviews);
+router.post("/:id/reviews", authentication, addProductReview);
 
-// productRouter.delete('/product/:id');
-
-export default productRouter;
+export default router;

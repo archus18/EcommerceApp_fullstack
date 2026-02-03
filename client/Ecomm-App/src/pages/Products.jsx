@@ -1,29 +1,62 @@
-import React from "react";
-import Navbar from "../components/Navbar";
-import ProductCart from "../components/ProductCart";
-
-const products = [
-  { id: 1, title: "iPhone 14", price: 69999, image: "https://cdn-icons-png.flaticon.com/512/179/179457.png" },
-  { id: 2, title: "Headphones", price: 1999, image: "https://cdn-icons-png.flaticon.com/512/3659/3659899.png" },
-  { id: 3, title: "Smart Watch", price: 2999, image: "https://cdn-icons-png.flaticon.com/512/847/847969.png" },
-  { id: 4, title: "Laptop", price: 45999, image: "https://cdn-icons-png.flaticon.com/512/3474/3474362.png" },
-];
+import { useEffect, useState } from "react";
+import { fetchProducts } from "../api/apis";
+import ProductCard from "../components/ProductCart";
+import { motion } from "framer-motion";
 
 const Products = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.log("FETCH PRODUCTS ERROR:", err?.response?.data || err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
   return (
-    <>
-      <Navbar />
-
-      <div className="max-w-7xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">All Products</h1>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCart key={product.id} product={product} />
-          ))}
+    <div className="min-h-screen bg-gradient-to-r from-cyan-400 to-green-400 px-4 py-10">
+      <motion.div
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-7xl mx-auto bg-white rounded-[40px] shadow-2xl p-8 md:p-12"
+      >
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+            All Products
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Explore our collection and shop smarter.
+          </p>
         </div>
-      </div>
-    </>
+
+        {loading ? (
+          <div className="text-center py-12 text-gray-600 font-medium">
+            Loading products...
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-12 text-gray-600 font-medium">
+            No products found.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((p) => (
+              <ProductCard key={p?._id || p?.id} product={p} />
+            ))}
+          </div>
+        )}
+      </motion.div>
+    </div>
   );
 };
 

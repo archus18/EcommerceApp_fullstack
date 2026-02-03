@@ -1,22 +1,19 @@
-import { Router } from 'express';
-import { getUserDetails , getAllUsers, updateUser, deleteUser } from '../controller/userController.js'
+import { Router } from "express";
+import {
+  getAllUsers,
+  createUser,
+  deleteUser,
+  getUserCount,
+} from "../controller/userController.js";
 
+import { authentication, authorization } from "../middleware/authentication.js";
 
-const userRouter = Router();
+const router = Router();
 
-userRouter.get('/' , (req,res)=>{
-    res.send("User route is working");
-})
+// ✅ ADMIN ONLY
+router.get("/", authentication, authorization, getAllUsers);
+router.post("/", authentication, authorization, createUser);
+router.delete("/:id", authentication, authorization, deleteUser);
+router.get("/count", authentication, authorization, getUserCount);
 
-userRouter.get('/user/:id', getUserDetails);
-
-userRouter.get('/users', getAllUsers);
-
-userRouter.put('/user/:id', updateUser);
-
-userRouter.delete('/user/:id', deleteUser );
-
-export default userRouter;
-
-
-
+export default router;

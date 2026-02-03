@@ -1,39 +1,50 @@
-import express from 'express';
-import userRouter from './routes/userRoutes.js';
-import authRouter from './routes/authRoutes.js';
-import productRouter from './routes/productRoutes.js';
-import dbConnection from './db/dbConnection.js';
-import dotenv from 'dotenv';
-import cors from 'cors';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
 
-dotenv.config();
+import authRouter from "./routes/authRoutes.js";
+import userRouter from "./routes/userRoutes.js";
+import productRouter from "./routes/productRoutes.js";
+import orderRouter from "./routes/orderRoutes.js";
+import wishlistRouter from "./routes/wishlistRoutes.js";
+import cartRouter from "./routes/cartRoutes.js";
+
+import dbConnection from "./db/dbConnection.js";
+
+dotenv.config({quite:true});
+
+
+
 
 const app = express();
 const PORT = 3000;
 
-// ✅ Enable CORS
-app.use(cors({
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
-
-// middleware
+/* ================= MIDDLEWARE ================= */
 app.use(express.json());
 
-// connect DB
+app.use(
+  cors({
+    origin: true, // ✅ allows all localhost ports in dev
+    credentials: true,
+  })
+);
+
+/* ================= DATABASE ================= */
 dbConnection();
 
-// test route
-app.get('/', (req, res) => {
+/* ================= ROUTES ================= */
+app.get("/", (req, res) => {
   res.send("Ecommerce Backend is running");
 });
 
-// routes
-app.use('/api/auth', authRouter);
-app.use('/api/users', userRouter);
-app.use('/api/products', productRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
+app.use("/api/orders", orderRouter);
+app.use("/api/wishlist", wishlistRouter);
+app.use("/api/cart", cartRouter);
 
+/* ================= SERVER ================= */
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

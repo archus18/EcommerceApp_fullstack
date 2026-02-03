@@ -1,87 +1,54 @@
+import User from "../model/userModel.js";
+import bcrypt from "bcryptjs";
 
-import User from '../model/userModel.js';
-import {authentication, authorization} from '../middleware/authentication.js';
+// ================= GET ALL USERS =================
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-const getUserDetails = (req, res) => {
-    try{
-        const userId = req.params.id;
-        const user = users.find(u => u.id == userId);
-        if(!user){
-            return res.status(404).send("User not found");
-        }
+// ================= CREATE USER (ADMIN PANEL) =================
+export const createUser = async (req, res) => {
+  try {
+    const { firstName, lastName, email, password, role } = req.body;
 
-        res.status(200).json(user);
-    }
-    catch(err){
-        res.status(500).send("Server error");
-    }
-}
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-const getAllUsers = async (req, res) =>{
-    try{
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      role,
+    });
 
-        const authenticationResult = await authentication(req, res);
-        if(!authenticationResult){
-            res.status(401).send("User not authenticated");
-        }
+    await user.save();
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-        const authorizationResult = await authorization(req, res);
-        if(!authorizationResult){
-            res.status(403).send("User not authorized");
-        }
+// ================= DELETE USER =================
+export const deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-        const allUsers = await User.find();
-        res.status(200).json(allUsers);
-    }
-    catch(err){
-        res.status(500).send("Server error");
-    }
-}
-
-const updateUser = (req, res) => {
-    try {
-        const userId = req.params.id;
-        const updateData = req.body;
-
-        const userIndex = users.findIndex(user => user.id == userId);
-
-        if (userIndex === -1) {
-            return res.status(404).send("User not found");
-        }
-
-        // Mutate the existing array instead of reassigning
-        users[userIndex] = { ...users[userIndex], ...updateData };
-
-        res.status(200).json({ message: "User updated successfully", user: users[userIndex] });
-    }
-    catch (err) {
-        res.status(500).send("Server error");
-    }
-}
-
-const deleteUser = (req, res) => {
-    try{
-        const userId = req.params.id;
-        const initialLength = users.length;
-        const updatedUsers = users.filter(user => user.id != userId);
-
-        // if(users.length == initialLength){
-        //     return res.status(404).send("User not found");
-        // }
-
-        res.status(200).send(updatedUsers);
-    }
-    catch(err){
-        res.status(500).send("Server error");
-    }
-}
-
-
-
-
-export {
-    getUserDetails,
-    getAllUsers,
-    updateUser,
-    deleteUser
-}
+// ================= USER COUNT (DASHBOARD) =================
+export const getUserCount = async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
